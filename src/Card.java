@@ -1,28 +1,37 @@
 public class Card {
-    private int number;
-    private int suit;
+    private String name;
+    private int value;
+    
+
+    public Card(int value, String name)
+    {
+        this.value = value;
+        this.name = name;
+    }
+
+    public int getValue()
+    {
+        return value;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setValue(int value)
+    {
+        this.value = value;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
 
     public String toString()
     {
-        String suitString;
-        switch (suit) {
-            case 1:
-                suitString = "Hearts";
-                break;
-            case 2:
-                suitString = "Diamonds";
-                break;
-            case 3:
-                suitString = "Clubs";
-                break;
-            case 4:
-                suitString = "Spades";
-                break;
-            default:
-                throw new AssertionError();
-        }
-
-        return String.format("%2d of ", number, suitString);
+        return String.format("Name: %s\nValue: %d", name, value);
     }
     
 }
