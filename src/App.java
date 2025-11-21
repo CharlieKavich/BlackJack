@@ -1,35 +1,87 @@
 import java.util.Random;
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import javax.lang.model.util.ElementScanner14;
 
 
 public class App {
+    private static final int shoeSize = 312;
     private static ArrayList<Card> deck = new ArrayList<Card>();
     private static ArrayList<Card> playerHand = new ArrayList<Card>();
     private static ArrayList<Card> compHand = new ArrayList<Card>();
     private static Random random = new Random();
+    private static Scanner in = new Scanner(System.in);
+
     public static void main(String[] args) throws Exception {
+        boolean cont = true;
+        int handCounter = 1;
         initializeDeck();
         System.out.println("Welcome to Black Jack!\nSpecial Rules:\n1. Six Deck Shoe that will be shuffled once less than half of the cards remain.\n");
-        game();
+
+        do {
+            System.out.println("Hand " + handCounter + ":");
+            handInitialize();
+            displayCompHand(false);
+            displayPlayerHand();
+            int canContinue = handStateCheck(playerHand);
+            while(canContinue == 1)
+            {
+                boolean invalid = true;
+                String inputs = "";
+                while(invalid)
+                {
+                    System.out.println("Would you like to hit? (Y/N)");
+                    try 
+                    {
+                        inputs = in.nextLine();
+                        invalid = false;
+                    } 
+                    catch (Exception e) 
+                    {
+                        System.out.println("Your input was invalid please try again.");
+                    }
+
+                }
+
+                if(inputs.equals("y"))
+                {
+                    addCard(playerHand);
+                    System.out.print("You chose to hit.");
+                    displayPlayerHand();
+                }
+                else if(inputs.equals("n"))
+                {
+                    System.out.print("You chose to stay.");
+                    displayPlayerHand();
+                    break;
+                }
+                else
+                {
+                    System.out.println("Your input was invalid please try again.");
+                }
+
+                canContinue = handStateCheck(playerHand);
+            }
+            dealerAction();
+            cont = false;
+        } while (cont); 
         
 
 
     }
 
-    public static void game() {
-        boolean cont = true;
-        int handCounter = 1;
-        do {
-            System.out.println("Hand " + handCounter + ":");
-            handInitialize();
-            displayCompHand();
-            displayPlayerHand();
+    public static void dealerAction() 
+    {
+        System.out.println("\nThe dealer will now show.");
+        displayCompHand(true);
+        while(handStateCheck(compHand) == 1 && handTotal(compHand) < 17)
+        {
+            addCard(compHand);
+            System.out.println("\nThe dealer hits.");
+            displayCompHand(true);
+        } 
 
-
-            cont = false;
-        } while (cont); 
     }
 
     public static void displayPlayerHand()
@@ -40,13 +92,24 @@ public class App {
         }
     }
 
-    public static void displayCompHand()
-    {
-        System.out.println("\nDealer hand:");
-        System.out.println("Card 1: Hidden");
-        for (int i = 1; i < compHand.size(); i++) {
+    public static void displayCompHand(boolean ready)
+    {   
+        if(!ready)
+        {
+            System.out.println("\nDealer hand:");
+            System.out.println("Card 1: Hidden");
+            for (int i = 1; i < compHand.size(); i++) {
             System.out.println("Card " + (i + 1) + ": " + compHand.get(i).getName());
+            }
         }
+        else
+        {
+            System.out.println("\nDealer hand:");
+            for (int i = 0; i < compHand.size(); i++) {
+                System.out.println("Card " + (i + 1) + ": " + compHand.get(i).getName());
+            }
+        }
+        
     }
 
     public static void handInitialize()
@@ -60,7 +123,7 @@ public class App {
         }
     }
 
-    public static int bustCheck(ArrayList<Card> hand)
+    public static int handStateCheck(ArrayList<Card> hand)
     {
         int total = handTotal(hand);
         int handState = 2; //There are three handstates. 0 is a BlackJack, 1 is a playing hand, and 2 is a bust
@@ -93,7 +156,6 @@ public class App {
 
     }
 
-    
     public static int handTotal(ArrayList<Card> hand) 
     {
         int total = 0;
