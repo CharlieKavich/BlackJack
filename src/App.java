@@ -3,7 +3,12 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 
-
+/**
+ * Black Jack final project.
+ * This is the main app that has the logic and interfacing for a game of blackjack.
+ * @author Charlie Kavich
+ * @since 11-20-25
+ */
 
 public class App {
     /**
@@ -143,7 +148,12 @@ public class App {
 
 
     }
-
+    /**
+     * This method is where the logic of who wins and the dealers actions reside.
+     * If the player doesn't bust, the dealer will hit until they value of their hand is greater than 17 or they bust.
+     * In the case neither the player or dealer busts, whichever hand is closer to 21 wins.
+     * In the case of a tie, a tie message will present itself.
+     */
     public static void gameEndAndDealerAction() 
     {
         if(handStateCheck(playerHand) == 2)
@@ -180,6 +190,9 @@ public class App {
         }
     }
 
+    /**
+     * This method simply displays the cards in your hand and their total value.
+     */
     public static void displayPlayerHand()
     {
         System.out.println("\nYour hand:");
@@ -189,6 +202,13 @@ public class App {
         System.out.println("Your total is currently: " + handTotal(playerHand));
     }
 
+    /**
+     * This method displays the dealers hand.
+     * Before the player makes their actions the dealer's
+     * first card is hidden. After the player is done
+     * making decisions, the dealer reveals the hidden card.
+     * @param ready this boolean reprents whether or not the dealer is ready to reveal the hidden card.
+     */
     public static void displayCompHand(boolean ready)
     {   
         if(!ready)
@@ -210,6 +230,11 @@ public class App {
         
     }
 
+    /**
+     * Initializes the hands for the beginning of a round of blackjack
+     * by clearing whatever was in the hands and adding 2 cards
+     * for both the player and the dealer.
+     */
     public static void handInitialize()
     {
     
@@ -221,6 +246,14 @@ public class App {
         }
     }
 
+    /**
+     * This method checks a hand to see what state it is in of which there are three.
+     * The first is blackjack, the second is playable, and the third is busted.
+     * This method also will update the value of the hand for the Ace rule.
+     * The ace is 11 by default, but if it prevents you from busting, its value will go to 1.
+     * @param hand the array list of cards which you are checking the handstate of
+     * @return a 0 means the hand is a black jack, a 1 means the hand is still playable, and a 2 means the hand is a bust.
+     */
     public static int handStateCheck(ArrayList<Card> hand)
     {
         int total = handTotal(hand);
@@ -254,6 +287,11 @@ public class App {
 
     }
 
+    /**
+     * Computes the total value of the hand specified by the parameter.
+     * @param hand the array list for the total value of the cards to be calculated
+     * @return the total value of the hand
+     */
     public static int handTotal(ArrayList<Card> hand) 
     {
         int total = 0;
@@ -263,6 +301,10 @@ public class App {
         return total;
     }   
 
+    /**
+     * Adds a card to the hand and removes it from the shoe.
+     * @param hand the hand arraylist of cards that the card is being added to.
+     */
     public static void addCard(ArrayList<Card> hand)
     {
 
@@ -271,6 +313,9 @@ public class App {
         deck.remove(index);
     }
 
+    /**
+     * Initializes the shoe by adding 6 decks of playing cards worth of card objects to the deck array list.
+     */
     public static void initializeDeck()
     {
         deck.removeAll(deck);
