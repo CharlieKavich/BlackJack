@@ -2,15 +2,41 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
-import javax.lang.model.util.ElementScanner14;
+
 
 
 public class App {
+    /**
+     * This is an integer representing the amount of cards in the full 6 decks
+     * that make of a shoe for casino blackjack. Once the shoe array list called deck
+     * is less than half of the total shoe size in this int, it will be refreshed.
+     */
     private static final int shoeSize = 312;
+    /**
+     * This is an array list of cards representing the 6 decks that make up the shoe.
+     * It is literally just an array list that will be initialized with 6 full decks
+     * of playing cards represented by the card class. I should have named it shoe,
+     * but by the time I thought about it, it was already implemented in a bunch of places
+     * as deck.
+     */
     private static ArrayList<Card> deck = new ArrayList<Card>();
+    /**
+     * This is an array list that represents the player's hand of cards.
+     * The cards are represented by the card class.
+     */
     private static ArrayList<Card> playerHand = new ArrayList<Card>();
+    /**
+     * This is an array list that represents the computer/dealer's hand of cards.
+     * The cards are represented by the card class.
+     */
     private static ArrayList<Card> compHand = new ArrayList<Card>();
+    /**
+     * Instance variable for my random object so I don't have to repeatedly declare new ones.
+     */
     private static Random random = new Random();
+    /**
+     * Instance variable for my scanner object so I don't have to repeatedly declare new ones.
+     */
     private static Scanner in = new Scanner(System.in);
 
     public static void main(String[] args) throws Exception {
@@ -25,9 +51,9 @@ public class App {
             displayCompHand(false);
             displayPlayerHand();
             int canContinue = handStateCheck(playerHand);
+            boolean invalid = true;
             while(canContinue == 1)
             {
-                boolean invalid = true;
                 String inputs = "";
                 while(invalid)
                 {
@@ -37,20 +63,22 @@ public class App {
                         inputs = in.nextLine();
                         invalid = false;
                     } 
-                    catch (Exception e) 
+                    catch (InputMismatchException e) 
                     {
-                        System.out.println("Your input was invalid please try again.");
+                        System.out.println("Your input was invalid please try again. 2");
                     }
 
                 }
 
-                if(inputs.equals("y"))
+                if(inputs.toLowerCase().equals("y"))
                 {
                     addCard(playerHand);
                     System.out.print("You chose to hit.");
+                    handStateCheck(playerHand); //this is only here to update the value of the ace in case you go over 21
                     displayPlayerHand();
+                    
                 }
-                else if(inputs.equals("n"))
+                else if(inputs.toLowerCase().equals("n"))
                 {
                     System.out.print("You chose to stay.");
                     displayPlayerHand();
@@ -58,30 +86,98 @@ public class App {
                 }
                 else
                 {
-                    System.out.println("Your input was invalid please try again.");
+                    System.out.println("Your input was invalid please try again 1.");
                 }
 
+                invalid = true;
                 canContinue = handStateCheck(playerHand);
             }
-            dealerAction();
-            cont = false;
+
+            gameEndAndDealerAction();
+
+            boolean exit = false;
+            while(!exit)
+            {
+                invalid = true;
+                String playAgainAnswer = "";
+                while(invalid)
+                    {
+                        System.out.println("Would you like to play again? (Y/N)");
+                        try 
+                        {
+                            playAgainAnswer = in.nextLine();
+                            invalid = false;
+                        } 
+                        catch (InputMismatchException e) 
+                        {
+                            System.out.println("Your input was invalid please try again.");
+                        }
+
+                    }
+                
+                if(playAgainAnswer.toLowerCase().equals("y"))
+                {
+                    cont = true;
+                    exit = true;
+                }
+                else if(playAgainAnswer.toLowerCase().equals("n"))
+                {
+                    System.out.println("Goodbye!");
+                    cont = false;
+                    exit = true;
+                }
+                else
+                {
+                    System.out.println("Your input was invalid please try.");
+                }
+            }
+            
+            if(deck.size() < shoeSize / 2)
+            {
+                initializeDeck();
+            }
+
+            handCounter += 1;
         } while (cont); 
         
 
 
     }
 
-    public static void dealerAction() 
+    public static void gameEndAndDealerAction() 
     {
-        System.out.println("\nThe dealer will now show.");
-        displayCompHand(true);
-        while(handStateCheck(compHand) == 1 && handTotal(compHand) < 17)
+        if(handStateCheck(playerHand) == 2)
         {
-            addCard(compHand);
-            System.out.println("\nThe dealer hits.");
+            System.out.println("The player busts and therefore the dealer wins!");
+        }
+        else
+        {
+            System.out.println("\nThe dealer will now show.");
             displayCompHand(true);
-        } 
-
+            while(handStateCheck(compHand) == 1 && handTotal(compHand) < 17)
+            {
+                addCard(compHand);
+                System.out.println("\nThe dealer hits.");
+                handStateCheck(compHand); //this is only here for the ace rule in case the dealer goes over 21
+                displayCompHand(true);
+            }
+            if(handStateCheck(compHand) == 2)
+            {
+                System.out.println("The dealer busts and therefore the player wins!");
+            }
+            else if(handTotal(playerHand) > handTotal(compHand))
+            {
+                System.out.println("The player is closer to 21 and therefore wins!");
+            }
+            else if(handTotal(playerHand) < handTotal(compHand))
+            {
+                System.out.println("The dealer is closer to 21 and therefore wins!");
+            }
+            else 
+            {
+                System.out.println("It is a tie!");
+            }
+        }
     }
 
     public static void displayPlayerHand()
@@ -90,6 +186,7 @@ public class App {
         for (int i = 0; i < playerHand.size(); i++) {
             System.out.println("Card " + (i + 1) + ": " + playerHand.get(i).getName());
         }
+        System.out.println("Your total is currently: " + handTotal(playerHand));
     }
 
     public static void displayCompHand(boolean ready)
@@ -108,6 +205,7 @@ public class App {
             for (int i = 0; i < compHand.size(); i++) {
                 System.out.println("Card " + (i + 1) + ": " + compHand.get(i).getName());
             }
+            System.out.println("The dealer's total is currently: " + handTotal(compHand));
         }
         
     }
@@ -167,6 +265,7 @@ public class App {
 
     public static void addCard(ArrayList<Card> hand)
     {
+
         int index = random.nextInt(0, deck.size());
         hand.add(deck.get(index));
         deck.remove(index);
