@@ -54,6 +54,7 @@ public class App {
             System.out.println("Hand " + handCounter + ":");
             handInitialize();
             displayCompHand(false);
+            handStateCheck(playerHand);
             displayPlayerHand();
             int canContinue = handStateCheck(playerHand);
             boolean invalid = true;
