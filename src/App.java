@@ -48,7 +48,7 @@ public class App {
         boolean cont = true;
         int handCounter = 1;
         initializeDeck();
-        System.out.println("Welcome to Black Jack!\nSpecial Rules:\n1. Six Deck Shoe that will be shuffled once less than half of the cards remain.\n2. Face cards are worth 10 and Aces are worth 11 unless such a number would make the player or dealer bust, in which case the Ace gos to 1.\n3. The dealer hits until his hand is worth >= 17.\n");
+        System.out.println("Welcome to Black Jack!\nSpecial Rules:\n1. Six Deck Shoe that will be shuffled once less than half of the cards remain.\n");
 
         do {
             System.out.println("Hand " + handCounter + ":");
